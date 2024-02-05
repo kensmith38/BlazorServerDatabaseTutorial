@@ -1,0 +1,52 @@
+﻿@page "/Delete/{Id}"
+@using BlazorServerDatabaseTutorial.Data
+@inject VolunteerService volunteerService
+@inject NavigationManager NavigationManager
+
+<h3>DeleteVolunteer</h3>
+<hr />
+<h3>Are you sure want to delete this?</h3>
+<form>
+    <div class="row">
+        <div class=" col-md-8">
+            <div class="form-group">
+                <label>Id:</label>
+                <label>@volunteer.Id</label>
+            </div>
+            <div class="form-group">
+                <label>Volunteer Name:</label>
+                <label>@volunteer.VolunteerName</label>
+            </div>
+            <div class="form-group">
+                <label>Phone:</label>
+                <label>@volunteer.VolunteerPhone</label>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="button" class="btn btn-danger" @onclick="@Delete" value="Delete" />
+                <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+@code {
+    [Parameter]
+    public string Id { get; set; }
+    Volunteer volunteer = new Volunteer();
+    protected override async Task OnInitializedAsync()
+    {
+        volunteer = await Task.Run(() => volunteerService.GetVolunteerAsync(Convert.ToInt32(Id)));
+    }
+    protected async void Delete()
+    {
+        await volunteerService.DeleteVolunteerAsync(volunteer.Id);
+        NavigationManager.NavigateTo("Volunteers");
+    }
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("Volunteers");
+    }
+}

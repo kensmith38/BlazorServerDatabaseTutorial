@@ -1,0 +1,57 @@
+﻿@page "/volunteers"
+@using BlazorServerDatabaseTutorial.Data
+@inject VolunteerService volunteerService
+
+<NavLink class="nav-link" href="AddVolunteer">
+    <span class="oi oi-plus" aria-hidden="true">Add New</span>
+
+</NavLink>
+
+<h3>Volunteers</h3>
+@if (ListVolunteers is null)
+{
+    <p><em>Loading... !</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Volunteer Name</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var volunteer in ListVolunteers)
+            {
+                <tr>
+                    <td>@volunteer.Id</td>
+                    <td>@volunteer.VolunteerName</td>
+                    <td>@volunteer.VolunteerPhone</td>
+                    <td>@volunteer.VolunteerEmail</td>
+
+                    <td>
+                        @*<a class="nav-link" href="EditEmployee/@volunteer.Id">
+                            <span class="oi oi-pencil" aria-hidden="true">Edit</span>
+                        </a>*@
+                        <a class="nav-link" href="Delete/@volunteer.Id">
+                            <span class="oi oi-trash" aria-hidden="true">Delete</span>
+                        </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    List<Volunteer> ListVolunteers;
+    protected override async Task OnInitializedAsync()
+    {
+        ListVolunteers = await volunteerService.GetAllVolunteersAsync();
+
+    }
+}

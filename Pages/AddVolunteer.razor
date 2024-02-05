@@ -1,0 +1,48 @@
+﻿@page "/AddVolunteer"
+@using BlazorServerDatabaseTutorial.Data
+@inject VolunteerService volunteerService
+@inject NavigationManager NavigationManager 
+
+<h3>AddVolunteer</h3>
+<!-- Note: We could use editform instead of form to support validation -->
+<form>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="form-group">
+                <label for="Name" class="control-label">Name</label>
+                <input name="Name" class="form-control" @bind="@volunteer.VolunteerName" />
+            </div>
+            
+            <div class="form-group">
+                <label for="Phone" class="control-label">Phone</label>
+                <input name="Phone" class="form-control" @bind="@volunteer.VolunteerPhone" />
+            </div>
+            <div class="form-group">
+                <label for="Email" class="control-label">Email</label>
+                <input name="Email" class="form-control" @bind="@volunteer.VolunteerEmail" />
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-group">
+                <input type="button" class="btn btn-primary" @onclick="@CreateVolunteer" value="Save" />
+                <input type="button" class="btn btn-primary" @onclick="@Cancel" value="Cancel" />
+            </div>
+        </div>
+    </div>
+</form>
+
+@code {
+    Volunteer volunteer = new Volunteer();
+    protected async void CreateVolunteer()
+    {
+        await volunteerService.AddVolunteerAsync(volunteer);
+        NavigationManager.NavigateTo("volunteers");
+    }
+    void Cancel()
+    {
+        NavigationManager.NavigateTo("volunteers");
+    }
+}
