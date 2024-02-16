@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BlazorServerDatabaseTutorial.Pages;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Internal;
 
 namespace BlazorServerDatabaseTutorial.Data
@@ -57,18 +58,30 @@ namespace BlazorServerDatabaseTutorial.Data
         public async Task<bool> DeleteVolunteerAsync(int volunteerId)
         {
             bool successFlag = false;
-            // TRICKY! We cannot simply use GetVolunteerAsync because it runs under a different dbContext!
-            // Volunteer volunteer = await GetVolunteerAsync(volunteerId);  <--- cannot do this!
             using (var ctx = ContextFactory.CreateDbContext())
             {
-                var query = ctx.Volunteers.Where(k => k.Id == volunteerId);
-                if (query.Count() == 1)
+                // There are 3 different ways to approach this in EF Core (Technique 1 is most efficient.)
+                int technique = 3;
+                Volunteer volunteer = null;
+                if (technique == 1)
                 {
-                    Volunteer volunteer = await query.FirstAsync();
-                    ctx.Volunteers.Remove(volunteer);
-                    await ctx.SaveChangesAsync();
-                    successFlag = true;
+                    volunteer = new Volunteer() { Id = volunteerId };
                 }
+                else if (technique == 2)
+                {
+                    volunteer = await GetVolunteerAsync(volunteerId);
+                }
+                else if (technique == 3)
+                {
+                    var query = ctx.Volunteers.Where(k => k.Id == volunteerId);
+                    if (query.Count() == 1)
+                    {
+                        volunteer = await query.FirstAsync();
+                    }
+                }
+                ctx.Volunteers.Remove(volunteer);
+                await ctx.SaveChangesAsync();
+                successFlag = true;
             }
             return successFlag;
         }
